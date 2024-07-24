@@ -1,0 +1,179 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mobile OTP</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1>Login</h1>
+        <div class="username" id="username">
+            Username: <input type="text" placeholder="Enter your username" id="uname" name="username">
+        </div>
+        <div id="sender">
+            Number:&nbsp&nbsp&nbsp&nbsp<input type="text" placeholder="+91**********" id="number" name="number" />
+            <div id="recaptcha-container"></div>
+            <button id="send" class="send" value="Send" onclick="sendOTP()">Send OTP</button>
+        </div>
+        <div id="verify" style="display: none">
+            <input type="text" id="verificationcode" placeholder="Enter otp" />
+            <button class="verify" id="verify" value="Verify" onclick="codeverify()">Verify</button>
+            <div class="p-conf">Number Verified</div>
+            <div class="n-conf">OTP error</div>
+        </div>
+    </div>
+    <script src="https://www.gstatic.com/firebasejs/9.12.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.12.1/firebase-auth-compat.js"></script>
+    <script src="index.js"></script>
+</body>
+
+</html> -->
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Mobile OTP Verification</title>
+    <style>
+        .container {
+            width: 302px;
+            height: 175px;
+            position: absolute;
+            left: 0px;
+            right: 0px;
+            top: 0px;
+            bottom: 0px;
+            margin: auto;
+            padding: 25px;
+        }
+
+        #send {
+            cursor: pointer;
+        }
+
+        #number,
+        #verificationcode {
+            width: calc(100% - 24px);
+            padding: 10px;
+            font-size: 20px;
+            margin-bottom: 5px;
+            outline: none;
+        }
+
+        #recaptcha-container {
+            margin-bottom: 5px;
+        }
+
+        #send,
+        #verify {
+            width: 100%;
+            height: 40px;
+            outline: none;
+        }
+
+        .p-conf,
+        .n-conf {
+            width: calc(100% - 22px);
+            border: 2px solid green;
+            border-radius: 4px;
+            padding: 8px 10px;
+            margin: 4px 0px;
+            background-color: rgba(0, 249, 12, 0.5);
+            display: none;
+        }
+
+        .n-conf {
+            border-color: red;
+            background-color: rgba(255, 0, 4, 0.5);
+        }
+
+        .navbar {
+            width: 100%;
+            background-color: #007bff;
+            color: white;
+            text-align: left;
+            padding: 15px 0;
+            font-size: 20px;
+            padding-left: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="navbar">
+        Welcome to Firebase Mobile Auth
+    </div>
+    <div class="container">
+        <h2 style="color: black;">Mobile OTP Verification</h2>
+        <div id="sender">
+            <input type="text" id="number" class="formcontrol" placeholder="+91....">
+            <div id="recaptcha-container"></div>
+            <input type="button" id="send" value="Send" onclick="phoneAuth()">
+        </div>
+        <br>
+        <div id="verifier" style="display: none;">
+            <input type="text" id="verificationcode" placeholder="OTP Code">
+            <input type="button" id="verify" value="Verify" onclick="codeverify()">
+            <div class="p-conf">Number Verified</div>
+            <div class="n-conf">OTP Error</div>
+        </div>
+    </div>
+    <script src="https://www.gstatic.com/firebasejs/9.12.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.12.1/firebase-auth-compat.js"></script>
+    <script>
+        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+        const firebaseConfig = {
+            apiKey: "AIzaSyBivDlkb_leKimmBygsr96rFCVeT_8CpBU",
+            authDomain: "mobile-otp-f0fd5.firebaseapp.com",
+            projectId: "mobile-otp-f0fd5",
+            storageBucket: "mobile-otp-f0fd5.appspot.com",
+            messagingSenderId: "1034731294669",
+            appId: "1:1034731294669:web:ae762e3c80355c93fb3e84",
+            measurementId: "G-Z8W8NEH8J0"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+
+        // Render reCAPTCHA
+        function renderRecaptcha() {
+            if (!window.recaptchaVerifier) {
+                window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container');
+                recaptchaVerifier.render();
+            }
+        }
+
+        // Send OTP
+        function phoneAuth() {
+            renderRecaptcha();
+            var number = document.getElementById('number').value;
+            firebase.auth().signInWithPhoneNumber(number, window.recaptchaVerifier).then(function (confirmationResult) {
+                window.confirmationResult = confirmationResult;
+                console.log('OTP Sent');
+                document.getElementById('verifier').style.display = 'block';
+            }).catch(function (error) {
+                console.error(error);
+                alert(error.message);
+            });
+        }
+
+        // Verify OTP
+        function codeverify() {
+            var code = document.getElementById('verificationcode').value;
+            window.confirmationResult.confirm(code).then(function () {
+                console.log('OTP Verified');
+                document.querySelector('.p-conf').style.display = 'block';
+            }).catch(function (error) {
+                console.error(error);
+                document.querySelector('.n-conf').style.display = 'block';
+            });
+        }
+    </script>
+</body>
+
+</html>
